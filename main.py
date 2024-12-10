@@ -97,3 +97,4 @@ prediction =model.predict(real_data)
 prediction = scaler.inverse_transform(prediction)
 
 print()
+model.save("crypto_model.h5")

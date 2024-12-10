@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Price Predictor</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: #1c1c1c;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #00bcd4;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #9e9e9e;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: #00bcd4;
+            background: #444;
+        }
+
+        .input-group input::placeholder, .input-group select {
+            color: #bbb;
+        }
+
+        select {
+            cursor: pointer;
+            background: #333;
+            border-color: #444;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background-color: #00bcd4;
+            color: white;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn:hover {
+            background-color: #03a9f4;
+            transform: translateY(-3px);
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #f1f1f1;
+        }
+
+        .result span {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00bcd4;
+        }
+
+        .loading {
+            color: #00bcd4;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .input-group input, .input-group select, .btn {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CryptoNic</h1>
+        <div class="input-group">
+            <label for="crypto">Cryptocurrency:</label>
+            <input type="text" id="crypto" value="BTC" placeholder="e.g., BTC, ETH, XRP">
+        </div>
+        <div class="input-group">
+            <label for="currency">Currency:</label>
+            <input type="text" id="currency" value="USD" placeholder="e.g., USD, EUR">
+        </div>
+        <div class="input-group">
+            <label for="days">Prediction Duration:</label>
+            <select id="days">
+                <option value="1">1 Day</option>
+                <option value="5">5 Days</option>
+                <option value="10">10 Days</option>
+                <option value="15">15 Days</option>
+                <option value="30">30 Days</option>
+                <option value="60">60 Days</option>
+                <option value="365">1 Year</option>
+                <option value="1825">5 Years</option>
+            </select>
+        </div>
+        <button class="btn" onclick="predictPrice()">Predict Price</button>
+        <div class="result" id="result"></div>
+        <div class="loading" id="loading" style="display: none;">Loading prediction...</div>
+    </div>
+
+    <script>
+        function predictPrice() {
+            const crypto = document.getElementById("crypto").value;
+            const currency = document.getElementById("currency").value;
+            const days = document.getElementById("days").value;
+
+            // Show loading state
+            document.getElementById("loading").style.display = 'block';
+            document.getElementById("result").style.display = 'none';
+
+            // Sending a GET request to the Flask app
+            fetch(`/predict?crypto=${crypto}&currency=${currency}&days=${days}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading state
+                    document.getElementById("loading").style.display = 'none';
+                    document.getElementById("result").style.display = 'block';
+
+                    if (data.predicted_price) {
+                        document.getElementById("result").innerHTML = 
+                            `Predicted Price for ${days} day(s) ahead: <span>$${data.predicted_price.toFixed(2)}</span>`;
+                    } else {
+                        document.getElementById("result").innerHTML = `Error: ${data.error}`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("loading").style.display = 'none';
+                    document.getElementById("result").innerHTML = `Error: ${error.message}`;
+                    document.getElementById("result").style.display = 'block';
+                });
+        }
+    </script>
+</body>
+</html>
