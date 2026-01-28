@@ -9,11 +9,13 @@ import joblib
 
 app = Flask(__name__)
 
-# Load the trained model
-model = load_model(r"C:\Projects 4th year\Crypto predictor\crypto_model.h5")
+BASE_DIR=os.path.abspath((__file__))
+MODEL_PATH=os.path.join(BASE_DIR,"crypto_model.h5")
+SCALER_PATH=os.path.join(MODEL_PATH,"scaler.pkl")
 
-# Load the scaler
-scaler = joblib.load(r"C:\Projects 4th year\Crypto predictor\scaler.pkl")
+
+model = load_model(MODEL_PATH)
+scaler = joblib.load(SCALER_PATH) 
 
 @app.route('/')
 def home():
