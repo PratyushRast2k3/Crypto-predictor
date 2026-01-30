@@ -13,6 +13,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH=os.path.join(BASE_DIR,"crypto_model.h5")
 SCALER_PATH=os.path.join(BASE_DIR,"scaler.pkl")
 
+### G4JYZQVWW3UWV6D9.api key alpha vantage
 
 model = load_model(MODEL_PATH)
 scaler = joblib.load(SCALER_PATH) 
