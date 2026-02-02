@@ -5,4 +5,5 @@ tensorflow
 scikit-learn
 joblib
 yfinance
+requests
 pandas
