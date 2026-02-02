@@ -3,9 +3,41 @@ from flask import Flask, request, jsonify, render_template
 import numpy as np
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
-import yfinance as yf
+import requests
 import datetime as dt
 import joblib
+
+
+
+def get_price_from_coingecko(crypto: str, currency: str):
+    coin_map = {
+        "BTC": "bitcoin",
+        "ETH": "ethereum",
+        "XRP": "ripple",
+        "SOL": "solana",
+        "DOGE": "dogecoin",
+        "ADA": "cardano",
+    }
+
+    crypto = crypto.upper().strip()
+    currency = currency.lower().strip()
+
+    if crypto not in coin_map:
+        raise ValueError(f"Unsupported crypto: {crypto}. Use: {list(coin_map.keys())}")
+
+    # CoinGecko supports: usd, eur, gbp, inr, etc.
+    url = "https://api.coingecko.com/api/v3/simple/price"
+    params = {"ids": coin_map[crypto], "vs_currencies": currency}
+
+    r = requests.get(url, params=params, timeout=10)
+    r.raise_for_status()
+    data = r.json()
+
+    price = data.get(coin_map[crypto], {}).get(currency)
+    if price is None:
+        raise ValueError(f"Unsupported currency: {currency}. Try: usd, eur, gbp, inr")
+
+    return float(price)
 
 app = Flask(__name__)
 
@@ -36,14 +68,18 @@ def predict():
     #currency = request.args.get('currency', 'USD')  # Default to USD
     #days = int(request.args.get('days', 1))  # Default to 1 day prediction
 
-    try:
+    #try:
         # Fetch data
-        start = dt.datetime(2016, 1, 1)
-        end = dt.datetime.now()
-        data = yf.download(f"{crypto}-{currency}", start=start, end=end)
+     #   start = dt.datetime(2016, 1, 1)
+      #  end = dt.datetime.now()
+       # data = yf.download(f"{crypto}-{currency}", start=start, end=end)
 
-        if data.empty:
-            return jsonify({'error': f'No data returned for ticker: {ticker}'}), 400
+        #if data.empty:
+         #   return jsonify({'error': f'No data returned for ticker: {ticker}'}), 400
+    try:
+        current_price = get_price_from_coingecko(crypto, currency)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
         
