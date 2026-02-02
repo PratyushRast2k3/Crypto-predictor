@@ -1,5 +1,5 @@
 import joblib
-import yfinance as yf
+import requests
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import datetime as dt
@@ -11,7 +11,7 @@ currency = 'USD'
 # Fetch data
 start = dt.datetime(2016, 1, 1)
 end = dt.datetime.now()
-data = yf.download(f"{crypto}-{currency}", start=start, end=end)
+data = requests.download(f"{crypto}-{currency}", start=start, end=end)
 
 # Ensure the data has the 'Close' column
 if 'Close' not in data.columns:
