@@ -24,9 +24,17 @@ def home():
 
 @app.route('/predict', methods=['GET'])
 def predict():
-    crypto = request.args.get('crypto', 'BTC')  # Default to BTC
-    currency = request.args.get('currency', 'USD')  # Default to USD
-    days = int(request.args.get('days', 1))  # Default to 1 day prediction
+    crypto = request.args.get('crypto', 'BTC').upper().strip()
+    currency = request.args.get('currency', 'USD').upper().strip()
+
+    ticker = crypto if "-" in crypto else f"{crypto}-{currency}"
+
+    data = yf.download(ticker, period="2y", interval="1d", progress=False)
+
+
+    #crypto = request.args.get('crypto', 'BTC')  # Default to BTC
+    #currency = request.args.get('currency', 'USD')  # Default to USD
+    #days = int(request.args.get('days', 1))  # Default to 1 day prediction
 
     try:
         # Fetch data
@@ -35,7 +43,10 @@ def predict():
         data = yf.download(f"{crypto}-{currency}", start=start, end=end)
 
         if data.empty:
-            return jsonify({'error': 'Failed to fetch data. Check the ticker symbol.'}), 400
+            return jsonify({'error': f'No data returned for ticker: {ticker}'}), 400
+
+
+        
 
         scaled_data = scaler.fit_transform(data['Close'].values.reshape(-1, 1))
 
