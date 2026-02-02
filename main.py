@@ -1,4 +1,4 @@
-import yfinance as yf
+import requests
 import datetime as dt
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,7 +16,7 @@ start = dt.datetime(2016, 1, 1)
 end = dt.datetime.now()
 
 # Fetch data using yfinance
-data = yf.download(f"{crypto_currency}-{against_currency}", start=start, end=end)
+data = requests.download(f"{crypto_currency}-{against_currency}", start=start, end=end)
 
 # Check if data is fetched properly
 if data.empty:
